@@ -12,11 +12,17 @@ app.use(bodyParser.json())
 
 //input: distance
 //output: 0: no react, 1: react
-let model1 = new tfModel(1, 1)
+let model1 = new tfModel(1, 2)
 
 app.post('/trainModel', async (req, res) => {
-    const input = req.body.input
-    const output = req.body.output
+    let input = req.body.input
+    let output = req.body.output
+
+    input = JSON.parse(input)
+    input = tf.tensor2d(input)
+    output = JSON.parse(output)
+    output = tf.tensor2d(output)
+
     try{
         const result = await model1.trainModel(input, output)
         res.json({response: result})

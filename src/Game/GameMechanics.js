@@ -59,3 +59,11 @@ export function checkRockCollision(piece, rocks){
     }
     return false
 }
+
+export function calcRockDist(piece, rocks, WIDTH){
+    let minRockDist = WIDTH
+    for(let i=0; i<rocks.length; i++){
+        minRockDist = Math.min(minRockDist, piece.dist(rocks[i]))
+    }
+    return minRockDist
+}

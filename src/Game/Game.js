@@ -5,13 +5,13 @@ import Board from './Board'
 import Timer from '../Util/Timer'
 
 import Piece from './Piece'
-import { spawnRockRandom, moveAllRocks, jump, gravity, checkRockCollision } from './GameMechanics'
+import { spawnRockRandom, moveAllRocks, jump, gravity, checkRockCollision, calcRockDist } from './GameMechanics'
 import KeyPress from '../Util/KeyPress'
 
 const WIDTH = 10
 const HEIGHT = 5
 
-export default function Game() {
+export default function Game(props) {
     const [ticks, setTicks] = useState(0)
     function resetGame(){
       setPiece(new Piece(1,4,1))
@@ -19,21 +19,26 @@ export default function Game() {
     }
     const [piece, setPiece] = useState(new Piece(1,4,1))
     const [rocks, setRocks] = useState([])
-    const [jumpRequested, setJumpRequested] = useState(false)
+    const [jumpRequested, setJumpRequested] = useState(0)
     //Event loop
     useEffect(() => {
+      props.collectDataPoint(calcRockDist(piece, rocks, WIDTH), jumpRequested)
+
 
       gravity(setPiece, HEIGHT)
       spawnRockRandom(ticks, setRocks)
       moveAllRocks(setRocks)
 
       if(checkRockCollision(piece, rocks)){
+        props.collisionPenalty()
         resetGame()
       }
       if(jumpRequested === true){
         jump(piece, setPiece, HEIGHT)
-        setJumpRequested(false)
+        setJumpRequested(0)
       }
+
+      props.tickReward()
   
     }, [ticks])
   
@@ -52,7 +57,7 @@ export default function Game() {
           piece={piece}
           rocks={rocks}
         />
-        <KeyPress gameJumpHandler={() => {setJumpRequested(true)}}/>
+        <KeyPress gameJumpHandler={() => {setJumpRequested(1)}}/>
       </div>
     )
   }

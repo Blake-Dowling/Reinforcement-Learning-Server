@@ -2,7 +2,7 @@
 import axios from 'axios'
 
 
-export default function trainModel(input, output){
+export function trainModel(input, output){
     axios.post('http://localhost:3001/trainModel', {
         input: input,
         output: output

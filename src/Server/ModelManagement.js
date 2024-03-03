@@ -22,7 +22,7 @@ class tfModel{
         x = dense2.apply(x)
         const output = outputLayer.apply(x)
 
-        const model = tf.model({inputs: [inputLayer], outputs:[output]})
+        const model = tf.model({inputs: inputLayer, outputs:output})
         console.log(model.summary())
         model.compile({optimizer: tf.train.adam(0.001), loss: {'output': 'sparseCategoricalCrossentropy'}, metrics: ['accuracy']})
         return model

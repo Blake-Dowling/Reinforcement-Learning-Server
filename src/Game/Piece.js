@@ -4,8 +4,9 @@ export default class Piece{
         this.y = y
         this.val = val
     }
-    getY(){
-        return this.y
+
+    dist(otherPiece){
+        return Math.abs(this.x - otherPiece.x)
     }
     collidedWithPiece(otherPiece){
         return (this.x === otherPiece.x && 
