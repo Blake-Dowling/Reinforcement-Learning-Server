@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import './Style/Main.css'
 
-const CELL_SIZE = 20
+const CELL_SIZE = 40
 
 
 export default function Board(props) {
@@ -21,6 +21,35 @@ export default function Board(props) {
     useEffect(() => {    
         initializeBoard()
     }, [])
+    //Todo: multi-cell object
+    function ob(object){
+        if(board === null || board === undefined){
+            return true
+        }
+        //General check for now
+        if(object.x >= props.WIDTH || object.y >= props.HEIGHT){
+            return true
+        }
+        return false
+    }
+    //Todo: multicell object
+    function drawObject(object){
+        if(board === null || board === undefined || ob(object)){
+            return
+        }
+        setBoard(prevBoard => {
+            let newBoard = JSON.parse(JSON.stringify(prevBoard))
+            newBoard[object.y][object.x] = object.val
+            return newBoard
+        })
+    }
+    useEffect(() => {
+        initializeBoard()
+        drawObject(props.piece)
+        for(let i=0; i<props.rocks.length; i++){
+            drawObject(props.rocks[i])
+        }
+    }, [props.ticks])
 
     function cellColor(rowIndex, columnIndex){
         if(board[rowIndex][columnIndex] === 1){
@@ -36,7 +65,6 @@ export default function Board(props) {
         <div className='board'>
             {board?.map((row, rowIndex) => {
                 return(<div className='row'>
-                    r
                     {row?.map((square, columnIndex) => {
                         return (<div className='cell' style={{
                             width: `${CELL_SIZE*1}px`,
