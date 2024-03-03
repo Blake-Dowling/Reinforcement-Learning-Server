@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import './Style/Main.css'
+import '../Style/Main.css'
 
 const CELL_SIZE = 40
 
@@ -49,7 +49,7 @@ export default function Board(props) {
         for(let i=0; i<props.rocks.length; i++){
             drawObject(props.rocks[i])
         }
-    }, [props.ticks])
+    }, [props.ticks, props.piece, props.rocks])
 
     function cellColor(rowIndex, columnIndex){
         if(board[rowIndex][columnIndex] === 1){
