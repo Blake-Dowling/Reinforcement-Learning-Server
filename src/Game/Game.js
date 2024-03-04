@@ -24,15 +24,17 @@ export default function Game(props) {
     //Event loop
     useEffect(() => {
 
-
+      gravity(setPiece, HEIGHT)
+      moveAllRocks(setRocks)
+      spawnRockRandom(setRocks)
 
 
       
 
 
-      if(Math.floor(Math.random()*3) == 0){
-        setJumpRequested(1)
-      }
+      // if(Math.floor(Math.random()*3) == 0){
+      //   setJumpRequested(1)
+      // }
       if(jumpRequested === 1){
         jump(piece, setPiece, HEIGHT)
         setJumpRequested(0)
@@ -48,9 +50,7 @@ export default function Game(props) {
         props.collisionPenalty()
         resetGame()
       }
-      gravity(setPiece, HEIGHT)
-      moveAllRocks(setRocks)
-      spawnRockRandom(setRocks)
+
   
     }, [ticks])
   
@@ -60,7 +60,7 @@ export default function Game(props) {
         <Timer
           ticks={ticks}
           setTicks={setTicks}
-          speed={100}
+          speed={500}
         />
         <Board
           ticks={ticks}
