@@ -14,31 +14,43 @@ const HEIGHT = 5
 export default function Game(props) {
     const [ticks, setTicks] = useState(0)
     function resetGame(){
-      setPiece(new Piece(1,4,1))
+      setPiece(new Piece(0,4,1))
       setRocks([])
     }
-    const [piece, setPiece] = useState(new Piece(1,4,1))
+    const [piece, setPiece] = useState(new Piece(0,4,1))
     const [rocks, setRocks] = useState([])
     const [jumpRequested, setJumpRequested] = useState(0)
+
     //Event loop
     useEffect(() => {
-      props.collectDataPoint(calcRockDist(piece, rocks, WIDTH), jumpRequested)
 
 
-      gravity(setPiece, HEIGHT)
-      spawnRockRandom(ticks, setRocks)
-      moveAllRocks(setRocks)
+
+
+      
+
+
+      if(Math.floor(Math.random()*3) == 0){
+        setJumpRequested(1)
+      }
+      if(jumpRequested === 1){
+        jump(piece, setPiece, HEIGHT)
+        setJumpRequested(0)
+      }
+      let input = calcRockDist(piece, rocks, WIDTH)
+      props.getPrediction(input)
+      console.log(props.prediction)
+      props.collectDataPoint(input, jumpRequested)
+
+      props.tickReward()
 
       if(checkRockCollision(piece, rocks)){
         props.collisionPenalty()
         resetGame()
       }
-      if(jumpRequested === true){
-        jump(piece, setPiece, HEIGHT)
-        setJumpRequested(0)
-      }
-
-      props.tickReward()
+      gravity(setPiece, HEIGHT)
+      moveAllRocks(setRocks)
+      spawnRockRandom(setRocks)
   
     }, [ticks])
   
@@ -48,7 +60,7 @@ export default function Game(props) {
         <Timer
           ticks={ticks}
           setTicks={setTicks}
-          speed={1000}
+          speed={100}
         />
         <Board
           ticks={ticks}

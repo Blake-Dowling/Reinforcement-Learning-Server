@@ -17,12 +17,13 @@ let model1 = new tfModel(1, 2)
 app.post('/trainModel', async (req, res) => {
     let input = req.body.input
     let output = req.body.output
-
+    console.log(input)
+    console.log(output)
     input = JSON.parse(input)
     input = tf.tensor2d(input)
     output = JSON.parse(output)
     output = tf.tensor2d(output)
-
+    
     try{
         const result = await model1.trainModel(input, output)
         res.json({response: result})
@@ -34,7 +35,9 @@ app.post('/trainModel', async (req, res) => {
 
 app.post('/predictModel', async (req, res) => {
     try{
-        const input = req.body.input
+        let input = req.body.input
+        input = JSON.parse(input)
+        input = tf.tensor(input)
         const prediction = await model1.predictModel(input)
         res.json({response: prediction})
     }catch(error){

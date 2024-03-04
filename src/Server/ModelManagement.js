@@ -12,14 +12,14 @@ class tfModel{
         //Input Layer
         const inputLayer = tf.input({shape: [inputShape]})
         //Hidden Layers
-        const dense1 = tf.layers.dense({units: 64, activation: 'relu'})
+        const dense1 = tf.layers.dense({units: 16, activation: 'relu'})
         const dense2 = tf.layers.dense({units: 64, activation: 'relu'})
         //Output Layer
         const outputLayer = tf.layers.dense({units: outputShape, activation: 'softmax', name: 'output'})
 
         //Apply Layers
         let x = dense1.apply(inputLayer)
-        x = dense2.apply(x)
+        // x = dense2.apply(x)
         const output = outputLayer.apply(x)
 
         const model = tf.model({inputs: inputLayer, outputs:output})
@@ -37,8 +37,10 @@ class tfModel{
     }
 
     async predictModel(input){
+        console.log(input.dataSync())
         let output = this.model.predict(input).dataSync()
         output = Array.from(output)
+        console.log(output)
         output = output.indexOf(Math.max(...output))
         output = {
             'output': output

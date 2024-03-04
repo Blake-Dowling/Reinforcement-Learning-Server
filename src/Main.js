@@ -12,13 +12,13 @@ export default function Main() {
   const [score, setScore] = useState(0)
   const [rockDistArray, setRockDistArray] = useState([]) //Input
   const [jumpedArray, setJumpedArray] = useState([]) //Output
-
+  const [prediction, setPrediction] = useState(null)
 
   useEffect(() => {
-    if(score <= -50){
+    if(score <= -1){
       resetData()
     }
-    if(score >= 50){
+    if(score >= 16){
       train(rockDistArray, jumpedArray)
       resetData()
     }
@@ -45,9 +45,16 @@ export default function Main() {
       return newJumpedArray
     })
   }
+  async function getPrediction(rockDist){
+    let newPrediction = await predict([rockDist])
+    setPrediction(prevPrediction => {
+      return newPrediction
+    })
+  }
   function resetData(){
     setRockDistArray([])
     setJumpedArray([])
+    setScore(0)
   }
   return (
     <div>
@@ -56,6 +63,8 @@ export default function Main() {
         tickReward={tickReward}
         collisionPenalty={collisionPenalty}
         collectDataPoint={collectDataPoint}
+        getPrediction={getPrediction}
+        prediction={prediction}
       />
     </div>
   )

@@ -6,8 +6,8 @@ import Piece from './Piece'
 // a JSON object instead of a new class instance.
 // This is okay for lists of class instances, though.
 
-export function spawnRockRandom(ticks, setRocks){
-    if(ticks % 5 === Math.floor(Math.random())*2){
+export function spawnRockRandom(setRocks){
+    if(Math.floor(Math.random()*3) == 0){
         setRocks(prevRocks => {
           const newRocks = JSON.parse(JSON.stringify(prevRocks))
           newRocks.push(new Piece(9, 4, 1))
