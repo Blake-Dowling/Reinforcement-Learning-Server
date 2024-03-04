@@ -7,7 +7,7 @@ import Piece from './Piece'
 // This is okay for lists of class instances, though.
 
 export function spawnRockRandom(setRocks){
-    if(Math.floor(Math.random()*5) == 0){
+    if(Math.floor(Math.random()*3) == 0){
         setRocks(prevRocks => {
           const newRocks = JSON.parse(JSON.stringify(prevRocks))
           newRocks.push(new Piece(9, 4, 1))

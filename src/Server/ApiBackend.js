@@ -17,8 +17,8 @@ let model1 = new tfModel(1, 2)
 app.post('/trainModel', async (req, res) => {
     let input = req.body.input
     let output = req.body.output
-    // console.log(input)
-    // console.log(output)
+    console.log(input)
+    console.log(output)
     input = JSON.parse(input)
     input = tf.tensor2d(input)
     output = JSON.parse(output)
