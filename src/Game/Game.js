@@ -27,7 +27,9 @@ export default function Game(props) {
 
 
 
-      
+      gravity(setPiece, HEIGHT)
+      moveAllRocks(setRocks)
+      spawnRockRandom(setRocks)
 
 
       if(Math.floor(Math.random()*3) == 0){
@@ -40,6 +42,7 @@ export default function Game(props) {
       let input = calcRockDist(piece, rocks, WIDTH)
       props.getPrediction(input)
       console.log(props.prediction)
+
       props.collectDataPoint(input, jumpRequested)
 
       props.tickReward()
@@ -48,9 +51,7 @@ export default function Game(props) {
         props.collisionPenalty()
         resetGame()
       }
-      gravity(setPiece, HEIGHT)
-      moveAllRocks(setRocks)
-      spawnRockRandom(setRocks)
+
   
     }, [ticks])
   
