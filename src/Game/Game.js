@@ -7,6 +7,7 @@ import Timer from '../Util/Timer'
 import Piece from './Piece'
 import { spawnRockRandom, moveAllRocks, jump, gravity, checkRockCollision, calcRockDist } from './GameMechanics'
 import KeyPress from '../Util/KeyPress'
+import {run_train, run_predict} from '../Util/Test'
 
 const WIDTH = 10
 const HEIGHT = 5
@@ -21,39 +22,47 @@ export default function Game(props) {
     const [rocks, setRocks] = useState([])
     const [jumpRequested, setJumpRequested] = useState(0)
 
-    //Event loop
+
+    useEffect(()=>{
+
+    },[])
     useEffect(() => {
+      run_train()
+      run_predict()
+  }, [ticks])
+    //Event loop
+    // useEffect(() => {
 
 
 
 
-      gravity(setPiece, HEIGHT)
-      moveAllRocks(setRocks)
-      spawnRockRandom(setRocks)
+    //   gravity(setPiece, HEIGHT)
+    //   moveAllRocks(setRocks)
+    //   spawnRockRandom(setRocks)
 
 
-      if(Math.floor(Math.random()*3) == 0){
-        setJumpRequested(1)
-      }
-      if(jumpRequested === 1){
-        jump(piece, setPiece, HEIGHT)
-        setJumpRequested(0)
-      }
-      let input = calcRockDist(piece, rocks, WIDTH)
-      props.getPrediction(input)
-      console.log(props.prediction)
+    //   if(Math.floor(Math.random()*3) == 0){
+    //     setJumpRequested(1)
+    //   }
+    //   if(jumpRequested === 1){
+    //     jump(piece, setPiece, HEIGHT)
+    //     setJumpRequested(0)
+    //   }
+    //   let input = calcRockDist(piece, rocks, WIDTH)
+    //   props.getPrediction(input)
+    //   console.log(props.prediction)
 
-      props.collectDataPoint(input, jumpRequested)
+    //   props.collectDataPoint(input, jumpRequested)
 
-      props.tickReward()
+    //   props.tickReward()
 
-      if(checkRockCollision(piece, rocks)){
-        props.collisionPenalty()
-        resetGame()
-      }
+    //   if(checkRockCollision(piece, rocks)){
+    //     props.collisionPenalty()
+    //     resetGame()
+    //   }
 
   
-    }, [ticks])
+    // }, [ticks])
   
   
     return (
@@ -61,7 +70,7 @@ export default function Game(props) {
         <Timer
           ticks={ticks}
           setTicks={setTicks}
-          speed={100}
+          speed={800}
         />
         <Board
           ticks={ticks}

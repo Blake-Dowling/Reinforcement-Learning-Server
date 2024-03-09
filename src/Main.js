@@ -4,6 +4,7 @@ import { train, predict } from './Frontend/DataManagement'
 import Game from './Game/Game'
 import { avgPool } from '@tensorflow/tfjs'
 
+
 const TICK_REWARD = 1
 const COLLISION_PENALTY = 20
 
@@ -13,6 +14,8 @@ export default function Main() {
   const [rockDistArray, setRockDistArray] = useState([]) //Input
   const [jumpedArray, setJumpedArray] = useState([]) //Output
   const [prediction, setPrediction] = useState(null)
+
+
 
   useEffect(() => {
     if(score <= -1){

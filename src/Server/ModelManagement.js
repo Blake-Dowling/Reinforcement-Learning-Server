@@ -12,21 +12,21 @@ class tfModel{
         //Input Layer
         const inputLayer = tf.input({shape: [inputShape]})
         //Hidden Layers
-        const dense3 = tf.layers.dense({units: 64, activation: 'relu', kernelRegularizer: tf.regularizers.l2({l2: 0.1})})
-        const dense2 = tf.layers.dense({units: 64, activation: 'relu', kernelRegularizer: tf.regularizers.l2({l2: 0.1})})
-        const dense1 = tf.layers.dense({units: 64, activation: 'relu', kernelRegularizer: tf.regularizers.l2({l2: 0.1})})
+        const dense3 = tf.layers.dense({units: 64, activation: 'relu', })//kernelRegularizer: tf.regularizers.l2({l2: 0.1})})
+        const dense2 = tf.layers.dense({units: 64, activation: 'relu', })//kernelRegularizer: tf.regularizers.l2({l2: 0.1})})
+        const dense1 = tf.layers.dense({units: 64, activation: 'relu', })//kernelRegularizer: tf.regularizers.l2({l2: 0.1})})
         //Output Layer
         const outputLayer = tf.layers.dense({units: outputShape, activation: 'softmax', name: 'output'})
 
         //Apply Layers
         let x = dense1.apply(inputLayer)
         x = dense2.apply(x)
-        x = dense3.apply(x)
+        // x = dense3.apply(x)
         const output = outputLayer.apply(x)
 
         const model = tf.model({inputs: inputLayer, outputs:output})
         console.log(model.summary())
-        model.compile({optimizer: tf.train.adam(0.0001), loss: {'output': 'sparseCategoricalCrossentropy'}, metrics: ['accuracy']})
+        model.compile({optimizer: tf.train.adam(0.001), loss: {'output': 'sparseCategoricalCrossentropy'}, metrics: ['accuracy']})
         return model
     }
 
