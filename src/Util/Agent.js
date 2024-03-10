@@ -1,41 +1,29 @@
 import React, {useState, useEffect} from 'react'
-import './Style/Main.css'
-import { train, predict } from './Frontend/DataManagement'
-import Game from './Game/Game'
+import '../Style/Main.css'
+import { train, predict } from '../Frontend/DataManagement'
+
 import { avgPool } from '@tensorflow/tfjs'
 
 
-const TICK_REWARD = 1
-const COLLISION_PENALTY = 20
 
-export default function Main() {
 
-  const [score, setScore] = useState(0)
+export default function Agent(props) {
+
+
   const [rockDistArray, setRockDistArray] = useState([]) //Input
   const [jumpedArray, setJumpedArray] = useState([]) //Output
   const [prediction, setPrediction] = useState(null)
 
 
 
-  useEffect(() => {
-    if(score <= -1){
-      resetData()
+
+  function calcRockDist(piece, rocks, WIDTH){
+    let minRockDist = WIDTH
+    for(let i=0; i<rocks.length; i++){
+        minRockDist = Math.min(minRockDist, piece.dist(rocks[i]))
     }
-    if(score >= 20){
-      train(rockDistArray, jumpedArray)
-      resetData()
-    }
-  }, [score])
-  function tickReward(){
-    setScore(prevScore => {
-      return prevScore + TICK_REWARD
-    })
-  }
-  function collisionPenalty(){
-    setScore(prevScore => {
-      return prevScore - COLLISION_PENALTY
-    })
-  }
+    return minRockDist
+}
   function collectDataPoint(rockDist, jumped){
     setRockDistArray(prevRockDistArray => {
       const newRockDistArray = JSON.parse(JSON.stringify(prevRockDistArray))
@@ -57,18 +45,37 @@ export default function Main() {
   function resetData(){
     setRockDistArray([])
     setJumpedArray([])
-    setScore(0)
   }
+  useEffect(() => {
+    if(props.score <= -1){
+      resetData()
+    }
+    if(props.score >= 20){
+      train(rockDistArray, jumpedArray)
+      resetData()
+    }
+  }, [props.score])
+  useEffect(()=>{
+
+    let input = calcRockDist(props.piece, props.rocks, props.WIDTH)
+    //Training
+    if(Math.floor(Math.random()*3) == 0){
+      props.jump()
+    }
+    //Testing
+    getPrediction(input)
+    console.log(prediction)
+    // console.log("---")
+    // console.log(input)
+    // console.log(props.jumpRequested)
+    collectDataPoint(input, props.jumpRequested)
+
+
+  }, [props.ticks])
+
   return (
     <div>
-      Score: {score}
-      <Game 
-        tickReward={tickReward}
-        collisionPenalty={collisionPenalty}
-        collectDataPoint={collectDataPoint}
-        getPrediction={getPrediction}
-        prediction={prediction}
-      />
+
     </div>
   )
 }

@@ -4,6 +4,7 @@ import DataManagement from '../Frontend/DataManagement'
 import Board from './Board'
 import Timer from '../Util/Timer'
 
+import Agent from '../Util/Agent'
 import Piece from './Piece'
 import { spawnRockRandom, moveAllRocks, jump, gravity, checkRockCollision, calcRockDist } from './GameMechanics'
 import KeyPress from '../Util/KeyPress'
@@ -11,17 +12,32 @@ import {run_train, run_predict} from '../Util/Test'
 
 const WIDTH = 4
 const HEIGHT = 5
+const TICK_REWARD = 1
+const COLLISION_PENALTY = 20
 
 export default function Game(props) {
+    const [score, setScore] = useState(0)
     const [ticks, setTicks] = useState(0)
-    function resetGame(){
-      setPiece(new Piece(0,4,1))
-      setRocks([])
-    }
+
     const [piece, setPiece] = useState(new Piece(0,4,1))
     const [rocks, setRocks] = useState([])
     const [jumpRequested, setJumpRequested] = useState(0)
 
+    function resetGame(){
+      setPiece(new Piece(0,4,1))
+      setRocks([])
+      setScore(0)
+    }
+    function tickReward(){
+      setScore(prevScore => {
+        return prevScore + TICK_REWARD
+      })
+    }
+    function collisionPenalty(){
+      setScore(prevScore => {
+        return prevScore - COLLISION_PENALTY
+      })
+    }
 
     useEffect(()=>{
 
@@ -40,13 +56,8 @@ export default function Game(props) {
       moveAllRocks(setRocks)
       spawnRockRandom(setRocks)
 
-      let input = calcRockDist(piece, rocks, WIDTH)
-      props.getPrediction(input)
-      console.log(props.prediction)
-      //Training
-      if(Math.floor(Math.random()*3) == 0){
-        setJumpRequested(1)
-      }
+
+
       //Testing
       // setJumpRequested(props.prediction)
 
@@ -56,23 +67,28 @@ export default function Game(props) {
       }
 
 
-      props.collectDataPoint(input, jumpRequested)
 
-      props.tickReward()
+
+      tickReward()
 
       if(checkRockCollision(piece, rocks)){
-        props.collisionPenalty()
+        collisionPenalty()
+        resetGame()
+      }
+      if(score > 20){
         resetGame()
       }
     }, [ticks])
-  
-  
+
+
+
     return (
       <div>
+        Score: {score}
         <Timer
           ticks={ticks}
           setTicks={setTicks}
-          speed={50}
+          speed={2000}
         />
         <Board
           ticks={ticks}
@@ -82,6 +98,15 @@ export default function Game(props) {
           rocks={rocks}
         />
         <KeyPress gameJumpHandler={() => {setJumpRequested(1)}}/>
+        <Agent
+          ticks={ticks}
+          score={score}
+          jump={() => {setJumpRequested(1)}}
+          piece={piece}
+          rocks={rocks}
+          WIDTH={WIDTH}
+          jumpRequested={jumpRequested}
+        />
       </div>
     )
   }
