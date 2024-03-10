@@ -21,7 +21,7 @@ export default function Main() {
     if(score <= -1){
       resetData()
     }
-    if(score >= 16){
+    if(score >= 20){
       train(rockDistArray, jumpedArray)
       resetData()
     }

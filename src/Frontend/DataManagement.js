@@ -3,37 +3,30 @@ const tf = require('@tensorflow/tfjs')
 
 
 const IN_MIN = 0
-const IN_MAX = 10
+const IN_MAX = 4
 
 function minMaxScale(input){
     return input.sub(IN_MIN).div(IN_MAX - IN_MIN)
 }
-async function balanceClasses(input, output){
-    let samples = []
+function balanceClasses(input, output){
+    let samples = {}
+    //Add inputs to map
     for(let i=0; i<input.length; i++){
-        samples.push([input[i][0], output[i][0]])
+        samples[input[i][0]] = output[i][0]
     }
-    // console.log(samples.shape[0])
-
-    // samples = samples.arraySync()
-    console.log(samples)
-    samples = tf.data.array(samples)
-    samples = samples.shuffle(3).shuffle(3).shuffle(3).shuffle(3)
-    samples = await samples.toArray()
-
-    let balancedSamples = []
-    for(let i=samples.length-1; i>=0; i--){
-        if(samples[i][0] === 0){
-            balancedSamples.push(samples[i])
-        }
+    input = Object.keys(samples).map(e=>[parseFloat(e)])
+    output = []
+    for(let i=0; i<input.length; i++){
+        output.push([samples[input[i]]])
     }
-    console.log(samples)
-        // samples = tf.util.shuffle(samples)
+    return [input, output]
 }
 
 //MUST be 2d arrays
 export async function train(input, output){
-    // balanceClasses(input, output)
+    let balanced = balanceClasses(input, output)
+    input = balanced[0]
+    output = balanced[1]
     input = tf.tensor2d(input)
     input = minMaxScale(input)
     input = input.arraySync()
@@ -41,6 +34,8 @@ export async function train(input, output){
     output = tf.tensor2d(output)
     output = output.arraySync()
     output = JSON.stringify(output)
+    console.log(input)
+    console.log(output)
     return await trainModel(input, output)
 }
 export async function predict(input){

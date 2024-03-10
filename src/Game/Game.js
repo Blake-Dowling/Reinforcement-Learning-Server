@@ -9,7 +9,7 @@ import { spawnRockRandom, moveAllRocks, jump, gravity, checkRockCollision, calcR
 import KeyPress from '../Util/KeyPress'
 import {run_train, run_predict} from '../Util/Test'
 
-const WIDTH = 10
+const WIDTH = 4
 const HEIGHT = 5
 
 export default function Game(props) {
@@ -26,43 +26,45 @@ export default function Game(props) {
     useEffect(()=>{
 
     },[])
-    useEffect(() => {
-      run_train()
-      run_predict()
-  }, [ticks])
+  //   useEffect(() => {
+  //     run_train()
+  //     run_predict()
+  // }, [ticks])
+
+
+
     //Event loop
-    // useEffect(() => {
+    useEffect(() => {
+
+      gravity(setPiece, HEIGHT)
+      moveAllRocks(setRocks)
+      spawnRockRandom(setRocks)
+
+      let input = calcRockDist(piece, rocks, WIDTH)
+      props.getPrediction(input)
+      console.log(props.prediction)
+      //Training
+      if(Math.floor(Math.random()*3) == 0){
+        setJumpRequested(1)
+      }
+      //Testing
+      // setJumpRequested(props.prediction)
+
+      if(jumpRequested === 1){
+        jump(piece, setPiece, HEIGHT)
+        setJumpRequested(0)
+      }
 
 
+      props.collectDataPoint(input, jumpRequested)
 
+      props.tickReward()
 
-    //   gravity(setPiece, HEIGHT)
-    //   moveAllRocks(setRocks)
-    //   spawnRockRandom(setRocks)
-
-
-    //   if(Math.floor(Math.random()*3) == 0){
-    //     setJumpRequested(1)
-    //   }
-    //   if(jumpRequested === 1){
-    //     jump(piece, setPiece, HEIGHT)
-    //     setJumpRequested(0)
-    //   }
-    //   let input = calcRockDist(piece, rocks, WIDTH)
-    //   props.getPrediction(input)
-    //   console.log(props.prediction)
-
-    //   props.collectDataPoint(input, jumpRequested)
-
-    //   props.tickReward()
-
-    //   if(checkRockCollision(piece, rocks)){
-    //     props.collisionPenalty()
-    //     resetGame()
-    //   }
-
-  
-    // }, [ticks])
+      if(checkRockCollision(piece, rocks)){
+        props.collisionPenalty()
+        resetGame()
+      }
+    }, [ticks])
   
   
     return (
@@ -70,7 +72,7 @@ export default function Game(props) {
         <Timer
           ticks={ticks}
           setTicks={setTicks}
-          speed={800}
+          speed={50}
         />
         <Board
           ticks={ticks}
