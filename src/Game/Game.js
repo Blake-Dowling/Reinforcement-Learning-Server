@@ -5,6 +5,7 @@ import Board from './Board'
 import Timer from '../Util/Timer'
 
 import Agent from '../Util/Agent'
+import Test from '../Util/Test'
 import Piece from './Piece'
 import { spawnRockRandom, moveAllRocks, jump, gravity, checkRockCollision, calcRockDist } from './GameMechanics'
 import KeyPress from '../Util/KeyPress'
@@ -39,13 +40,8 @@ export default function Game(props) {
       })
     }
 
-    useEffect(()=>{
+ 
 
-    },[])
-  //   useEffect(() => {
-  //     run_train()
-  //     run_predict()
-  // }, [ticks])
 
 
 
@@ -56,26 +52,17 @@ export default function Game(props) {
       moveAllRocks(setRocks)
       spawnRockRandom(setRocks)
 
-
-
-      //Testing
-      // setJumpRequested(props.prediction)
-
       if(jumpRequested === 1){
         jump(piece, setPiece, HEIGHT)
         setJumpRequested(0)
       }
-
-
-
-
       tickReward()
 
       if(checkRockCollision(piece, rocks)){
         collisionPenalty()
         resetGame()
       }
-      if(score > 20){
+      if(score >= 10){
         resetGame()
       }
     }, [ticks])
@@ -88,7 +75,7 @@ export default function Game(props) {
         <Timer
           ticks={ticks}
           setTicks={setTicks}
-          speed={2000}
+          speed={100}
         />
         <Board
           ticks={ticks}
@@ -98,6 +85,7 @@ export default function Game(props) {
           rocks={rocks}
         />
         <KeyPress gameJumpHandler={() => {setJumpRequested(1)}}/>
+        {/* <Test ticks={ticks}/> */}
         <Agent
           ticks={ticks}
           score={score}

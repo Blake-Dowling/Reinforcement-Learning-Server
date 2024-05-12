@@ -7,7 +7,7 @@ import Piece from './Piece'
 // This is okay for lists of class instances, though.
 
 export function spawnRockRandom(setRocks){
-    if(Math.floor(Math.random()*5) == 0){
+    if(Math.floor(Math.random()*4) == 0){
         setRocks(prevRocks => {
           const newRocks = JSON.parse(JSON.stringify(prevRocks))
           newRocks.push(new Piece(3, 4, 1))
@@ -35,7 +35,7 @@ export function jump(piece, setPiece, HEIGHT){
         return
     }
     setPiece(prevPiece => {
-        const newPiece = new Piece(prevPiece.x, prevPiece.y-2, prevPiece.val)
+        const newPiece = new Piece(prevPiece.x, prevPiece.y-1, prevPiece.val)
         return newPiece
     })
 }
@@ -60,10 +60,3 @@ export function checkRockCollision(piece, rocks){
     return false
 }
 
-export function calcRockDist(piece, rocks, WIDTH){
-    let minRockDist = WIDTH
-    for(let i=0; i<rocks.length; i++){
-        minRockDist = Math.min(minRockDist, piece.dist(rocks[i]))
-    }
-    return minRockDist
-}

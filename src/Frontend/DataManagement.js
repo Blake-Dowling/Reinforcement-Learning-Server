@@ -4,6 +4,7 @@ const tf = require('@tensorflow/tfjs')
 
 const IN_MIN = 0
 const IN_MAX = 4
+export let samples = 0
 
 function minMaxScale(input){
     return input.sub(IN_MIN).div(IN_MAX - IN_MIN)
@@ -12,7 +13,14 @@ function balanceClasses(input, output){
     let samples = {}
     //Add inputs to map
     for(let i=0; i<input.length; i++){
+        // if(samples.hasOwnProperty(input[i][0])){
+        //     samples[input[i][0]] = Math.max(samples[input[i][0]], output[i][0])
+        // }
+        // else{
+        //     samples[input[i][0]] = output[i][0]
+        // }
         samples[input[i][0]] = output[i][0]
+        
     }
     input = Object.keys(samples).map(e=>[parseFloat(e)])
     output = []
@@ -36,6 +44,7 @@ export async function train(input, output){
     output = JSON.stringify(output)
     console.log(input)
     console.log(output)
+    samples += 1
     return await trainModel(input, output)
 }
 export async function predict(input){
