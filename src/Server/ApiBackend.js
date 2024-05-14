@@ -33,7 +33,6 @@ app.post('/predictModel', async (req, res) => {
     try{
         let input = req.body.input
         let output = (await model1.predictModel(input)).output[0]
-        console.log(output)
         const prediction = tf.argMax(output).dataSync()[0]
 
         res.json({response: prediction})

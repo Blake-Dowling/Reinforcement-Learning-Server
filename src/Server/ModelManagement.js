@@ -36,21 +36,23 @@ class tfModel{
         //Current highest q value for each (next) state
         // console.log(onlineOutput)
 
-        const targetOutput = await tf.max(tf.tensor(onlineOutput), 1).array()
-
+        const maxOnlineQValues = await tf.max(tf.tensor(onlineOutput), 1).array()
+        console.log(onlineOutput)
         //todo: random indices to decorellate training
         for(let i=0; i<input.states.length-1; i++){
             if(input.done[i] !== true){
-                onlineOutput[i][input.actions[i]] = input.rewards[i] + targetOutput[i+1]
+                onlineOutput[i][input.actions[i]] = input.rewards[i] + maxOnlineQValues[i+1]
             }
             else if(input.done[i] === true){
                 onlineOutput[i][input.actions[i]] = input.rewards[i]
             }
         }
-        const tfInput = tf.tensor(input.states)
-        const output = {'output': tf.tensor(onlineOutput)}
 
-        let history = await this.model.fit(tfInput, output, {epochs: 3, })
+        const tfInput = tf.tensor(input.states)
+        // console.log(tf.random.shuffle(tfInput))
+        const targetOutput = {'output': tf.tensor(onlineOutput)}
+
+        let history = await this.model.fit(tfInput, targetOutput, {epochs: 3, shuffle: true})
         return new Promise((resolve, reject) => {
             resolve(history)
         })

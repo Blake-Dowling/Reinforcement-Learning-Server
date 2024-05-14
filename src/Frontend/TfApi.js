@@ -2,7 +2,7 @@
 import axios from 'axios'
 
 
-export async function trainModel(input){
+export async function train(input){
     return new Promise((resolve, reject) => {
         axios.post('http://localhost:3001/trainModel', {
             input: input
@@ -15,7 +15,7 @@ export async function trainModel(input){
         .catch(error => console.error('Error:', error))
     })
 }
-export async function predictModel(input){
+export async function predict(input){
     return new Promise((resolve, reject) => {
         axios.post('http://localhost:3001/predictModel', {
             input: input

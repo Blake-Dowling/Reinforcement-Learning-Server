@@ -1,15 +1,14 @@
 import React, {useState, useEffect} from 'react'
 import '../Style/Main.css'
-import DataManagement from '../Frontend/DataManagement'
 import Board from './Board'
 import Timer from '../Util/Timer'
 
 import Agent from '../Util/Agent'
-import Test from '../Util/Test'
+
 import Piece from './Piece'
 import { spawnRockRandom, moveAllRocks, jump, gravity, checkRockCollision, calcRockDist, checkInAir } from './GameMechanics'
 import KeyPress from '../Util/KeyPress'
-import {run_train, run_predict} from '../Util/Test'
+
 
 const WIDTH = 4
 const HEIGHT = 5
@@ -47,11 +46,11 @@ export default function Game(props) {
 
 
 
-      else{
-        setScore(prevScore => {
-          return prevScore + 1
-        })
-      }
+
+      setScore(prevScore => {
+        return prevScore + 1
+      })
+      
 
     }, [ticks])
 

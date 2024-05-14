@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import '../Style/Main.css'
-import { train, predict, samples } from '../Frontend/DataManagement'
+import { train, predict } from '../Frontend/TfApi'
 
 import { avgPool } from '@tensorflow/tfjs'
 
@@ -49,49 +49,33 @@ export default function Agent(props) {
     }
     addElement(reward, setRewards)
     //Done
-    if(props.checkRockCollision(props.piece, props.rocks) || props.score % 10 == 0){
+    if(props.checkRockCollision(props.piece, props.rocks) || (props.score > 0 && props.score % 10 == 0) ){
       addElement(true, setDone)
     }
     else{
       addElement(false, setDone)
     }
-
-
-    //
   }
-  // async function getPrediction(rockDist){
-  //   let newPrediction = await predict([rockDist])
-  //   setPrediction(prevPrediction => {
-  //     return newPrediction
-  //   })
-  // }
-  // function resetData(){
-  //   setRockDistArray([])
-  //   setJumpedArray([])
-  // }
-  // useEffect(() => {
-  //   if(props.score <= -1){
-  //     resetData()
-  //   }
-  //   if(props.score >= 10){
-  //     train(rockDistArray, jumpedArray)
-  //     resetData()
-  //   }
-  // }, [props.score])
 
-
+  async function getPrediction(input){
+    const newPrediction = await predict(input)
+    setPrediction(prevPrediction => {
+      return newPrediction
+    })
+  }
   useEffect(()=>{
-    async function getPrediction(input){
-      setPrediction(await predict(input))
-    }
-    //if sample legth == batch
-        //props.resetgame
-        //props.resetticks
-    
+    const rockDist = calcRockDist(props.piece, props.rocks, props.WIDTH)
+    const inAir = props.checkInAir(props.piece, props.HEIGHT)
+
+    getPrediction([[rockDist, inAir]])
     //Training
-    // console.log(states[states.length-1], actions[actions.length-1], rewards[rewards.length-1], done[done.length-1])
+
+  }, [props.ticks])
+  useEffect(() => {
+    console.log(prediction)
+    console.log(states[states.length-1], actions[actions.length-1], rewards[rewards.length-1], done[done.length-1])
     collectTuple()
-    if(states.length >= 25){
+    if(states.length >= 9){
       const curStates = JSON.parse(JSON.stringify(states))
       curStates.pop()
       const trainRewards = JSON.parse(JSON.stringify(rewards))
@@ -107,35 +91,17 @@ export default function Agent(props) {
       setRewards([])
       setDone([])
     }
-
-    const rockDist = calcRockDist(props.piece, props.rocks, props.WIDTH)
-    const inAir = props.checkInAir(props.piece, props.HEIGHT)
-
-    getPrediction([[rockDist, inAir]])
-    if(Math.floor(Math.random()*3) == 0){
+    if(prediction > 0){
       props.jump()
     }
-
-    //Testing
-    // getPrediction(input)
-    // console.log(prediction)
-    // console.log("---")
-    // console.log(input)
-    // console.log(props.jumpRequested)
-    // collectDataPoint(input, props.jumpRequested)
-
-
-  }, [props.ticks])
-  useEffect(() => {
-    console.log(prediction)
-    if(prediction > 0){
+    if(Math.floor(Math.random()*3) == 0){
       props.jump()
     }
   }, [prediction])
 
   return (
     <div>
-      Samples: {samples}
+
     </div>
   )
 }
