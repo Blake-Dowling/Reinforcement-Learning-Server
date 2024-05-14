@@ -34,24 +34,16 @@ export default function Game(props) {
       }
       gravity(setPiece, HEIGHT)
       moveAllRocks(setRocks)
-      if(ticks % 2 == 0){
+      if(ticks % 3 == 0){
         spawnRockRandom(setRocks)
       }
-
-
       if(jumpRequested === 1){
         jump(piece, setPiece, HEIGHT)
         setJumpRequested(0)
       }
-
-
-
-
       setScore(prevScore => {
         return prevScore + 1
       })
-      
-
     }, [ticks])
 
 
@@ -73,7 +65,6 @@ export default function Game(props) {
         <KeyPress gameJumpHandler={() => {setJumpRequested(1)}}/>
         {/* <Test ticks={ticks}/> */}
         <Agent
-          ticks={ticks}
           score={score}
           jump={() => {setJumpRequested(1)}}
           piece={piece}
