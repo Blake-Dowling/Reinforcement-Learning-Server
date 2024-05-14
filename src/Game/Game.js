@@ -7,14 +7,12 @@ import Timer from '../Util/Timer'
 import Agent from '../Util/Agent'
 import Test from '../Util/Test'
 import Piece from './Piece'
-import { spawnRockRandom, moveAllRocks, jump, gravity, checkRockCollision, calcRockDist } from './GameMechanics'
+import { spawnRockRandom, moveAllRocks, jump, gravity, checkRockCollision, calcRockDist, checkInAir } from './GameMechanics'
 import KeyPress from '../Util/KeyPress'
 import {run_train, run_predict} from '../Util/Test'
 
 const WIDTH = 4
 const HEIGHT = 5
-const TICK_REWARD = 1
-const COLLISION_PENALTY = 20
 
 export default function Game(props) {
     const [score, setScore] = useState(0)
@@ -29,42 +27,32 @@ export default function Game(props) {
       setRocks([])
       setScore(0)
     }
-    function tickReward(){
-      setScore(prevScore => {
-        return prevScore + TICK_REWARD
-      })
-    }
-    function collisionPenalty(){
-      setScore(prevScore => {
-        return prevScore - COLLISION_PENALTY
-      })
-    }
-
- 
-
-
-
 
     //Event loop
     useEffect(() => {
-
+      if(checkRockCollision(piece, rocks)){
+        resetGame()
+      }
       gravity(setPiece, HEIGHT)
       moveAllRocks(setRocks)
-      spawnRockRandom(setRocks)
+      if(ticks % 2 == 0){
+        spawnRockRandom(setRocks)
+      }
+
 
       if(jumpRequested === 1){
         jump(piece, setPiece, HEIGHT)
         setJumpRequested(0)
       }
-      tickReward()
 
-      if(checkRockCollision(piece, rocks)){
-        collisionPenalty()
-        resetGame()
+
+
+      else{
+        setScore(prevScore => {
+          return prevScore + 1
+        })
       }
-      if(score >= 10){
-        resetGame()
-      }
+
     }, [ticks])
 
 
@@ -75,7 +63,6 @@ export default function Game(props) {
         <Timer
           ticks={ticks}
           setTicks={setTicks}
-          speed={100}
         />
         <Board
           ticks={ticks}
@@ -93,7 +80,10 @@ export default function Game(props) {
           piece={piece}
           rocks={rocks}
           WIDTH={WIDTH}
-          jumpRequested={jumpRequested}
+          HEIGHT={HEIGHT}
+          checkRockCollision={checkRockCollision}
+          checkInAir={checkInAir}
+          jumpRequested={jumpRequested} //action
         />
       </div>
     )

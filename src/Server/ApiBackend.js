@@ -12,33 +12,30 @@ app.use(bodyParser.json())
 
 //input: distance
 //output: 0: no react, 1: react
-let model1 = new tfModel(1, 2)
-
+let model1 = new tfModel(2, 2)
+//JSON -> passes tensor
 app.post('/trainModel', async (req, res) => {
-    let input = req.body.input
-    let output = req.body.output
-    // console.log(input)
-    // console.log(output)
-    input = JSON.parse(input)
-    input = tf.tensor2d(input)
-    output = JSON.parse(output)
-    output = tf.tensor2d(output)
-    
+    const input = {
+        'states': req.body.input.states,
+        'actions': req.body.input.actions,
+        'rewards': req.body.input.rewards,
+        'done': req.body.input.done
+    }
     try{
-        const result = await model1.trainModel(input, output)
+        const result = await model1.trainModel(input)
         res.json({response: result})
     } catch(error){
         console.error('Error:', error.message)
         res.status(500).json({error: 'Internal Server Error.'})
     }
 })
-
 app.post('/predictModel', async (req, res) => {
     try{
         let input = req.body.input
-        input = JSON.parse(input)
-        input = tf.tensor(input)
-        const prediction = await model1.predictModel(input)
+        let output = (await model1.predictModel(input)).output[0]
+        console.log(output)
+        const prediction = tf.argMax(output).dataSync()[0]
+
         res.json({response: prediction})
     }catch(error){
         console.error('Error:', error.message)

@@ -7,7 +7,7 @@ import Piece from './Piece'
 // This is okay for lists of class instances, though.
 
 export function spawnRockRandom(setRocks){
-    if(Math.floor(Math.random()*4) == 0){
+    if(Math.floor(Math.random()*3) == 0){
         setRocks(prevRocks => {
           const newRocks = JSON.parse(JSON.stringify(prevRocks))
           newRocks.push(new Piece(3, 4, 1))
@@ -29,9 +29,7 @@ export function moveAllRocks(setRocks){
       })
 }
 export function jump(piece, setPiece, HEIGHT){
-    
-    if(piece.y < HEIGHT-1){
-        
+    if(checkInAir(piece, HEIGHT)){
         return
     }
     setPiece(prevPiece => {
@@ -58,5 +56,9 @@ export function checkRockCollision(piece, rocks){
         }
     }
     return false
+}
+
+export function checkInAir(piece, HEIGHT){
+    return piece.y < (HEIGHT - 1)
 }
 

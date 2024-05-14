@@ -2,11 +2,10 @@
 import axios from 'axios'
 
 
-export async function trainModel(input, output){
+export async function trainModel(input){
     return new Promise((resolve, reject) => {
         axios.post('http://localhost:3001/trainModel', {
-            input: input,
-            output: output
+            input: input
         })
         .then(response => {
             const loss = response.data.response.history.loss[2]
@@ -22,7 +21,7 @@ export async function predictModel(input){
             input: input
         })
         .then(response => {
-            let output = response.data.response.output
+            let output = response.data.response
             resolve(output)
         })
         .catch(error => {
