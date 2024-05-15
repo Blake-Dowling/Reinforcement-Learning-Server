@@ -1,8 +1,10 @@
 import React, {useState, useEffect} from 'react'
 import '../Style/Main.css'
-import { train, predict } from '../Frontend/TfApi'
+import { getOnlineModel, train, predict } from '../Frontend/TfApi'
 
 import { avgPool } from '@tensorflow/tfjs'
+const tf = require('@tensorflow/tfjs')
+// let onlineModel = tf.loadLayersModel({modelTopology: await getOnlineModel()})
 
 let states = []
 let actions = []
@@ -10,9 +12,6 @@ let rewards = []
 let done = []
 
 export default function Agent(props) {
-
-  const [prediction, setPrediction] = useState(null)
-  const [predictionBit, setPredictionBit] = useState(false)
 
   function calcRockDist(piece, rocks, WIDTH){
     let minRockDist = WIDTH
@@ -22,29 +21,20 @@ export default function Agent(props) {
     return minRockDist
   }
 
-  async function getPrediction(input){
-    const newPrediction = await predict(input)
-    setPrediction(prevPrediction => {
-      return newPrediction
-    })
-    setPredictionBit(prevPredictionBit => {
-      return !prevPredictionBit
-    })
-    return newPrediction
-  }
 
-  useEffect(()=>{
+  async function run(){
+    // console.log(typeof(onlineModel))
     //State
     const rockDist = calcRockDist(props.piece, props.rocks, props.WIDTH)
     const inAir = props.checkInAir(props.piece, props.HEIGHT)
-    getPrediction([[rockDist, inAir]])
-    states.push([rockDist, inAir])
-  }, [props.piece, props.rocks])
+    // getPrediction([[rockDist, inAir]])
 
-  useEffect(()=>{
+    const input = [rockDist, inAir]
+    states.push(input)
+    const prediction = await predict([input])
+    console.log(prediction)
     //Action
     let curAction = prediction
-    console.log(prediction)
     if(prediction > 0){
       props.jump()
     }
@@ -66,9 +56,12 @@ export default function Agent(props) {
     else{
       done.push(false)
     }
-    console.log(states[states.length-1], actions[actions.length-1], rewards[rewards.length-1], done[done.length-1])
+    // console.log(states[states.length-1], actions[actions.length-1], rewards[rewards.length-1], done[done.length-1])
     //Training
-    if(states.length >= 1025){
+    if(states.length >= 33){
+      // for(let i=0; i<states.length; i++){
+      //   console.log(states[i], actions[i], rewards[i], done[i])
+      // }
       train({
         'states': states,
         'actions': actions,
@@ -80,11 +73,19 @@ export default function Agent(props) {
       rewards = []
       done = []
     }
-  }, [predictionBit, prediction])
+  }
+  useEffect(()=>{
+    run()
+
+  }, [props.piece, props.rocks])
+
+  // useEffect(()=>{
+
+  // }, [predictionBit])
 
   return (
     <div>
-      Prediction: {prediction}
+
     </div>
   )
 }

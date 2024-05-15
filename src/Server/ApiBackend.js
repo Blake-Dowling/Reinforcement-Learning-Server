@@ -14,6 +14,15 @@ app.use(bodyParser.json())
 //output: 0: no react, 1: react
 let model1 = new tfModel(2, 2)
 //JSON -> passes tensor
+app.get('/getOnlineModel', async (req, res) => {
+    try{
+        const result = model1.model.save({saveFormat: 'json'})
+        res.json({response: result})
+    } catch(error){
+        console.error('Error:', error.message)
+        res.status(500).json({error: 'Internal Server Error.'})
+    }
+})
 app.post('/trainModel', async (req, res) => {
     const input = {
         'states': req.body.input.states,

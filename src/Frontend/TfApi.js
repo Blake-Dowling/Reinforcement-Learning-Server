@@ -1,7 +1,20 @@
 
 import axios from 'axios'
-
-
+const tf = require('@tensorflow/tfjs')
+export async function getOnlineModel(){
+    return new Promise((resolve, reject) => {
+        axios.get('http://localhost:3001/getOnlineModel')
+        .then(response => {
+            let output = response.data.response
+            // output = tf.loadLayersModel({modelTopology: output})
+            resolve(output)
+        })
+        .catch(error => {
+            console.error('Error:', error)
+            reject(error)
+        })
+    })
+}
 export async function train(input){
     return new Promise((resolve, reject) => {
         axios.post('http://localhost:3001/trainModel', {
